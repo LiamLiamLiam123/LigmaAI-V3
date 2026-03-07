@@ -1,0 +1,2 @@
+# LigmaAI-V3
+I WIWI WS
