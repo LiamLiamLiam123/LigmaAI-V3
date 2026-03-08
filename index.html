@@ -459,9 +459,11 @@
     if (!res.ok) throw new Error("HTTP " + res.status);
     let text = (await res.text()).trim();
     if (!text) throw new Error("Empty response");
-    // Strip Pollinations ad footer
-    text = text.replace(/\n*---\n*[\s\S]*?everyone\./g, "").trim();
-    text = text.replace(/🌸[\s\S]*?everyone\./g, "").trim();
+    // Strip Pollinations ad footer (any variation)
+    text = text.replace(/\n*-{2,}\s*Support Pollinations[\s\S]*/i, "").trim();
+    text = text.replace(/\n*🌸[\s\S]*/g, "").trim();
+    text = text.replace(/\n*-{2,}\s*\n*Powered by Pollinations[\s\S]*/i, "").trim();
+    text = text.replace(/\n*Powered by Pollinations[\s\S]*/i, "").trim();
     return text;
   }
 
