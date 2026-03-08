@@ -478,22 +478,32 @@
     });
   }
 
-  // Pollinations GET endpoint
+  // Pollinations POST endpoint (OpenAI-compatible, supports all models)
   async function fetchPollinations(model, prompt) {
-    const url = "https://text.pollinations.ai/"
-      + encodeURIComponent(prompt)
-      + "?model=" + model
-      + "&system=" + encodeURIComponent(SYSTEM)
-      + "&seed=" + Math.floor(Math.random() * 99999)
-      + "&private=true";
-    const res = await fetch(url);
+    // Build messages array from history + current prompt
+    const messages = [{ role: "system", content: SYSTEM }];
+    for (const m of history) {
+      messages.push({ role: m.role === "user" ? "user" : "assistant", content: m.content });
+    }
+    messages.push({ role: "user", content: prompt });
+
+    const res = await fetch("https://text.pollinations.ai/openai", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: model,
+        messages: messages,
+        seed: Math.floor(Math.random() * 99999),
+        private: true
+      })
+    });
     if (!res.ok) throw new Error("HTTP " + res.status);
-    let text = (await res.text()).trim();
+    const json = await res.json();
+    let text = json?.choices?.[0]?.message?.content?.trim();
     if (!text) throw new Error("Empty response");
-    // Strip Pollinations ad footer (any variation)
+    // Strip any stray Pollinations ads
     text = text.replace(/\n*-{2,}\s*Support Pollinations[\s\S]*/i, "").trim();
     text = text.replace(/\n*🌸[\s\S]*/g, "").trim();
-    text = text.replace(/\n*-{2,}\s*\n*Powered by Pollinations[\s\S]*/i, "").trim();
     text = text.replace(/\n*Powered by Pollinations[\s\S]*/i, "").trim();
     return text;
   }
@@ -527,10 +537,7 @@
     }
     lastRequestTime = Date.now();
 
-    const ctx = history
-      .map(m => (m.role === "user" ? "User" : "LigmaAI") + ": " + m.content)
-      .join("\n");
-    const prompt = ctx ? ctx + "\nUser: " + userText : userText;
+    const prompt = userText;
 
     // Try selected model first
     try {
