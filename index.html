@@ -98,7 +98,9 @@
     .tag-fast    { border-color:#2a4a5a; color:#6aaadf; }
     .tag-free    { border-color:#2a5a2a; color:#6adf8a; }
     .tag-claude  { border-color:#4a3a5a; color:#bb8aff; }
+    .tag-code    { border-color:#3a4a2a; color:#aadf6a; }
     .tag-claude  { border-color:#4a3a5a; color:#bb8aff; }
+    .tag-code    { border-color:#3a4a2a; color:#aadf6a; }
     .fallback-info { background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:13px 15px; font-size:11px; color:var(--text-dim); line-height:1.8; font-family:'Share Tech Mono',monospace; }
     .fallback-info span { color:var(--green-muted); }
     .back-btn { padding:7px 14px; background:#1a4a1a; border:1px solid #2a6a2a; border-radius:8px; color:var(--green-muted); font-family:'Share Tech Mono',monospace; font-size:11px; cursor:pointer; letter-spacing:1px; transition:all 0.2s; }
@@ -184,6 +186,31 @@
         </div>
       </div>
 
+      <div class="model-card" data-model="deepseek" onclick="selectModel(this)">
+        <div class="model-radio"></div>
+        <div class="model-info">
+          <div class="model-name">LIGMA-DEEP</div>
+          <div class="model-desc">DeepSeek V3 — excellent at coding, math, and reasoning. Open-source and free.</div>
+          <div class="tags">
+            <span class="tag tag-smart">REASONING</span>
+            <span class="tag tag-code">CODING</span>
+            <span class="tag tag-free">FREE</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="model-card" data-model="mistral" onclick="selectModel(this)">
+        <div class="model-radio"></div>
+        <div class="model-info">
+          <div class="model-name">LIGMA-MISTRAL</div>
+          <div class="model-desc">Mistral — fast, lightweight European open-source model. Great for everyday chat.</div>
+          <div class="tags">
+            <span class="tag tag-fast">FAST</span>
+            <span class="tag tag-free">FREE</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -191,7 +218,7 @@
     <div class="section-label">Fallback System</div>
     <div class="fallback-info">
       If your selected model fails, LigmaAI automatically switches to a working one and updates your selection here.<br><br>
-      <span>LIGMA-FAST</span> ↔ <span>LIGMA-LARGE</span> ↔ <span>LIGMA-CLAUDE</span><br><br>
+      <span>LIGMA-FAST</span> ↔ <span>LIGMA-LARGE</span> ↔ <span>LIGMA-CLAUDE</span> ↔ <span>LIGMA-DEEP</span> ↔ <span>LIGMA-MISTRAL</span><br><br>
       Conversation memory is always preserved when switching models.
     </div>
   </div>
@@ -207,13 +234,17 @@
   const MODEL_NAMES = {
     "openai-fast":  "LIGMA-FAST",
     "openai-large": "LIGMA-LARGE",
-    "claude-fast":  "LIGMA-CLAUDE"
+    "claude-fast":  "LIGMA-CLAUDE",
+    "deepseek":     "LIGMA-DEEP",
+    "mistral":      "LIGMA-MISTRAL"
   };
 
   const FALLBACKS = {
-    "openai-fast":  ["openai-large", "claude-fast"],
-    "openai-large": ["openai-fast",  "claude-fast"],
-    "claude-fast":  ["openai-fast",  "openai-large"]
+    "openai-fast":  ["openai-large", "deepseek", "mistral"],
+    "openai-large": ["openai-fast",  "deepseek", "mistral"],
+    "claude-fast":  ["openai-fast",  "deepseek", "mistral"],
+    "deepseek":     ["openai-fast",  "mistral",  "openai-large"],
+    "mistral":      ["openai-fast",  "deepseek", "openai-large"]
   };
 
   let selectedModel = "openai-fast";
